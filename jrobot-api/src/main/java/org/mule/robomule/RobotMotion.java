@@ -1,0 +1,51 @@
+/**
+ * (c) 2003-2014 MuleSoft, Inc. The software in this package is published under the terms of the CPAL v1.0 license,
+ * a copy of which has been included with this distribution in the LICENSE.md file.
+ */
+
+package org.mule.robomule;
+
+public enum RobotMotion {
+    Initial_Position,
+    Get_Up,
+    Sit,
+    Stand_Up,
+    Greet1,
+    Greet2,
+    Right_Jab,
+    Right_Hook,
+    Right_Uppercut,
+    Left_Jab,
+    Left_Hook,
+    Left_Uppercut,
+    Right_Hand_Wave,
+    Left_Hand_Wave,
+    Right_Turn,
+    Left_Turn,
+    Sidestep_Right,
+    Sidestep_Left,
+    Advance,
+    Reverse,
+    Front_Roll,
+    Sit_Up,
+    Push_Up,
+    Back_Roll,
+    Left_Attack1,
+    Right_Attack1,
+    Left_Attack2,
+    Right_Attack2,
+    Front_Attack,
+    Left_Kick,
+    Right_Kick,
+    Left_Side_Kick,
+    Right_Side_Kick,
+    Block_1,
+    Left_Block,
+    Right_Block,
+    Block_2,
+    Hand_Stand,
+    Fast_Advance,
+    Bboy_1,
+    Bboy_2,
+    Horse_Dance
+}
