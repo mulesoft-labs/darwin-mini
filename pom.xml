@@ -15,6 +15,7 @@
    <modules>
         <module>jrobot-api</module>
         <module>robo-connector</module>
+        <module>robottestfinal</module>
    </modules>
 
     <repositories>

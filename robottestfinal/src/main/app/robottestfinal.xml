@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:slackv2="http://www.mulesoft.org/schema/mule/slackv2" xmlns:sqs="http://www.mulesoft.org/schema/mule/sqs" xmlns:robo="http://www.mulesoft.org/schema/mule/robo" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+    xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/robo http://www.mulesoft.org/schema/mule/robo/current/mule-robo.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/sqs http://www.mulesoft.org/schema/mule/sqs/current/mule-sqs.xsd
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
+http://www.mulesoft.org/schema/mule/slackv2 http://www.mulesoft.org/schema/mule/slackv2/current/mule-slackv2.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <robo:config name="Robo" robotAddr="0FA5" doc:name="Robo"/>
+    <slackv2:config name="SlackV2" consumerKey="2228798738.2681439261" consumerSecret="bcb4e7f9cd7995b265753ed6eb986b55" doc:name="SlackV2">
+        <slackv2:oauth-callback-config domain="localhost" localPort="8081" remotePort="8081" path="callback"/>
+    </slackv2:config>
+    <data-mapper:config name="JSON_To_Map" transformationGraphPath="json_to_map.grf" doc:name="JSON_To_Map"/>
+    <data-mapper:config name="Json_To_Pojo_1" transformationGraphPath="json_to_pojo_1.grf" doc:name="DataMapper"/>
+    <sqs:config name="Amazon_SQS" accessKey="AKIAIBXTVRV5F2WWVTSQ" secretKey="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" queueName="RobotMessageQueue" doc:name="Amazon SQS">
+        <sqs:connection-pooling-profile initialisationPolicy="INITIALISE_ONE" exhaustedAction="WHEN_EXHAUSTED_GROW"/>
+    </sqs:config>
+    <flow name="MainFlow" doc:name="MainFlow">
+        <sqs:receive-messages config-ref="Amazon_SQS" doc:name="Amazon SQS (Streaming)"/>
+        <choice doc:name="Check Action">
+            <when expression="#[payload.equals('help')]">
+                <robo:get-help config-ref="Robo" doc:name="GetHelp"/>
+                <slackv2:send-channel-message config-ref="SlackV2" channel="C02L39HTU" message="#[payload]" doc:name="SendHelp"/>
+            </when>
+            <when expression="#[!(payload.toLowerCase().contains(&quot;here is the list of available commands&quot;))]">
+                <logger message="#[org.apache.commons.lang3.StringEscapeUtils.unescapeHtml3(payload)]" level="INFO" doc:name="LogCommand"/>
+                <robo:send-command-to-parse config-ref="Robo" commandToParse="#[org.apache.commons.lang3.StringEscapeUtils.unescapeHtml3(payload)]" doc:name="SendCommand"/>
+            </when>
+            <otherwise>
+                <logger message="----Bypassing Command (is the Command list)-----" level="INFO" doc:name="Logger"/>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="QueueFlow" doc:name="QueueFlow">
+        <poll doc:name="Poll Messages">
+            <fixed-frequency-scheduler frequency="1" startDelay="5" timeUnit="SECONDS"/>
+            <slackv2:channel-history config-ref="SlackV2" channelCode="C02L39HTU" doc:name="GetMessage"/>
+        </poll>
+        <data-mapper:transform config-ref="Json_To_Pojo_1" doc:name="MapToText"/>
+        <component doc:name="SendToSQS">
+            <singleton-object class="org.mule.utils.Encolador"/>
+        </component>
+    </flow>
+    <flow name="AuthorizeFlow" doc:name="AuthorizeFlow">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8081" path="slack/authorize" doc:name="AuthorizeHTTP"/>
+        <slackv2:authorize config-ref="SlackV2" doc:name="SlackAuthorize"/>
+    </flow>
+</mule>

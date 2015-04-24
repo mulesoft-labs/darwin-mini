@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-project xmlns="http://www.mulesoft.com/tooling/project" runtimeId="org.mule.tooling.server.3.5.1.ee" schemaVersion="3.5.0.0">
+    <name>robottestfinal</name>
+    <description></description>
+    <muleExtension name="Robo" qualifier="org.mule.tooling.ui.contribution.robo.3.5.0"/>
+    <muleExtension name="SlackV2" qualifier="org.mule.tooling.ui.contribution.slackv2.3.5.0"/>
+    <muleExtension name="Amazon SQS" qualifier="org.mule.tooling.ui.contribution.sqs"/>
+</mule-project>
