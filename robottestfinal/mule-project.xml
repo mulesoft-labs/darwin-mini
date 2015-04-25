@@ -3,5 +3,4 @@
     <name>robottestfinal</name>
     <description></description>
     <muleExtension name="Robo" qualifier="org.mule.tooling.ui.contribution.robo.3.5.0"/>
-    <muleExtension name="SlackV2" qualifier="org.mule.tooling.ui.contribution.slackv2.3.5.0"/>
 </mule-project>
