@@ -5,6 +5,8 @@
 
 package org.mule.robomule;
 
+import org.mule.robomule.exceptions.RobotOfflineException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -58,7 +60,7 @@ public class RobotSession {
             outStream.write(RobotUtils.toByteArray(message));
             outStream.flush();
         } catch (IOException e) {
-            return false;
+            throw new RobotOfflineException("Robot is offline!");
         }
         return true;
 

@@ -12,25 +12,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.mule.api.annotations.Connector;
+import org.mule.api.annotations.*;
 import org.mule.modules.robo.processors.SendCommandToParseMessageProcessor;
 import org.mule.robomule.*;
 import org.mule.robomule.RobotDiscoveryService.AddressRobotPredicate;
 import org.mule.robomule.RobotDiscoveryService.RobotPredicate;
-import org.mule.api.annotations.Connect;
-import org.mule.api.annotations.ConnectStrategy;
-import org.mule.api.annotations.ValidateConnection;
-import org.mule.api.annotations.ConnectionIdentifier;
-import org.mule.api.annotations.Disconnect;
 import org.mule.api.annotations.param.ConnectionKey;
 import org.mule.api.annotations.param.Optional;
 import org.mule.api.ConnectionException;
 import org.mule.api.ConnectionExceptionCode;
 import org.mule.api.annotations.display.Password;
-import org.mule.api.annotations.Configurable;
-import org.mule.api.annotations.Processor;
 
 import org.mule.api.annotations.param.Default;
+import org.mule.robomule.exceptions.RobotOfflineException;
 
 /**
  * Anypoint Connector
@@ -57,7 +51,7 @@ public class RoboConnector {
 	 * @throws ConnectionException
 	 */
 	@Connect(strategy = ConnectStrategy.SINGLE_INSTANCE)
-	public void connect(@ConnectionKey String robotAddr)
+	public synchronized void connect(@ConnectionKey String robotAddr)
 			throws ConnectionException {
 		if (robotSession != null)
 			return;
@@ -132,6 +126,7 @@ public class RoboConnector {
 	 *            Content to be processed
 	 * @return Some string
 	 */
+    @ReconnectOn(exceptions = {RobotOfflineException.class})
 	@Processor
 	public synchronized boolean sendCommandName(String roboMotionName) {
 		roboMotionName = roboMotionName.trim().toLowerCase();
@@ -150,6 +145,7 @@ public class RoboConnector {
 
 	}
 
+    @ReconnectOn(exceptions = {RobotOfflineException.class})
 	@Processor
 	public synchronized boolean sendCommandToParse(String commandToParse) {
 		List<CommandAndTime> motionsToSend = parseCommand(commandToParse);
