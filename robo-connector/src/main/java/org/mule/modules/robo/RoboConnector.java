@@ -6,24 +6,16 @@ package org.mule.modules.robo;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+
 
 import org.mule.api.annotations.*;
-import org.mule.modules.robo.processors.SendCommandToParseMessageProcessor;
 import org.mule.robomule.*;
 import org.mule.robomule.RobotDiscoveryService.AddressRobotPredicate;
-import org.mule.robomule.RobotDiscoveryService.RobotPredicate;
 import org.mule.api.annotations.param.ConnectionKey;
-import org.mule.api.annotations.param.Optional;
 import org.mule.api.ConnectionException;
 import org.mule.api.ConnectionExceptionCode;
-import org.mule.api.annotations.display.Password;
 
-import org.mule.api.annotations.param.Default;
 import org.mule.robomule.exceptions.RobotOfflineException;
 
 /**
